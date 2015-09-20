@@ -1,2 +1,2 @@
 Django==1.8.4
-django-info-screen
+-e git+https://github.com/OPpuolitaival/django-info-screen.git#egg=Package

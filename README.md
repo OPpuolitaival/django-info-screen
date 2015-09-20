@@ -1,31 +1,22 @@
-Simple Django info screen application.
+===============================
+Running the example application
+===============================
 
-Installation
-------------
+Clone django-info-screen:
 
-Install latest from github:
-```
-pip install -e git+https://github.com/OPpuolitaival/django-info-screen.git
-```
+    $ git clone https://github.com/OPpuolitaival/django-info-screen.git
+    $ cd django-info-screen/example
+    $ pip install -r requirements.txt
 
-Usage
------
+Create database and superuser:
 
-1. Add '' application in the ``INSTALLED_APPS`` settings:
+    $ python manage.py migrate
+    $ python manage.py createsuperuser
 
-	```
-	INSTALLED_APPS = (
-    	# ...
-    	'info_screen',
-	)
-	```
 
-2. Add the poll's url to your urls.py.
+Now you need to run the Django development server:
 
-	```
-	urlpatterns = patterns('',
-		# ...
-    	url(r'^info_screen/', include('info_screen.urls')),
-	)
-	```
-	
+    $ python manage.py runserver
+
+You should then be able to open your browser on http://127.0.0.1:8000 and
+see a page with links to sign in or sign up.
