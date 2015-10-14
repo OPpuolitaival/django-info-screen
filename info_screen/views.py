@@ -18,9 +18,13 @@ class PageView(TemplateView):
         page = get_object_or_404(Page, pk=kwargs['page'])
         queryset = Page.objects.filter(infoscreen=screen).order_by('pk')
         queryset = queryset.filter(
+            # Search visible pages at the moment
             Q(start__lt=timezone.now(), end__gt=timezone.now()) |
+            # If end time is missing, then the page is visible forever
             Q(end=None)
         )
+
+        # Query if there are some left in this round
         queryset_next = queryset.filter(pk__gt=page.pk)
 
         if queryset_next.count() > 0:
