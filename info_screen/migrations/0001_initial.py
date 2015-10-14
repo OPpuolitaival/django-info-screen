@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Collection',
+            name='InfoScreen',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True, verbose_name='Added', db_index=True)),
@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['timestamp'],
-                'verbose_name': 'Collection',
-                'verbose_name_plural': 'Collection',
+                'verbose_name': 'InfoScreen',
+                'verbose_name_plural': 'InfoScreen',
             },
         ),
         migrations.CreateModel(
@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='collection',
+            model_name='infoscreen',
             name='pages',
-            field=models.ManyToManyField(to='info_screen.Page', verbose_name='Collection'),
+            field=models.ManyToManyField(to='info_screen.Page', verbose_name='InfoScreen'),
         ),
     ]

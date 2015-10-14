@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
-from .models import Collection, Page
+from .models import InfoScreen, Page
 from django.utils import timezone
 
 
@@ -13,7 +13,7 @@ class PageView(TemplateView):
         Excludes any polls that aren't published yet.
         """
         context = super(PageView, self).get_context_data(**kwargs)
-        collection = get_object_or_404(Collection, pk=kwargs['collection'])
+        collection = get_object_or_404(InfoScreen, pk=kwargs['collection'])
         page = get_object_or_404(Page, pk=kwargs['page'])
 
         queryset = Page.objects.filter(collection=collection).order_by('pk')

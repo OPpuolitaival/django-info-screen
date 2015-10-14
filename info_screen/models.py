@@ -35,16 +35,16 @@ class Page(models.Model):
         verbose_name_plural = _("Page")
 
 
-class Collection(models.Model):
+class InfoScreen(models.Model):
     """
-    Collection which collects a set of views to show in loop
+    InfoScreen which collects a set of views to show in loop
     """
     timestamp = models.DateTimeField(_('Added'), auto_now_add=True, db_index=True)
     last_edit = models.DateTimeField(_('Last time edited'), auto_now=True, null=True)
     delay_in_sec = models.IntegerField(_('Delay in seconds'), default=5)
 
     title = models.CharField(_('Title'), max_length=255, default='', null=True)
-    pages = models.ManyToManyField(Page, verbose_name=_('Collection'))
+    pages = models.ManyToManyField(Page, verbose_name=_('InfoScreen'))
 
     def __str__(self):
         return u"{}".format(self.title)
@@ -52,5 +52,5 @@ class Collection(models.Model):
     class Meta:
         app_label = 'info_screen'
         ordering = ['timestamp']
-        verbose_name = _("Collection")
-        verbose_name_plural = _("Collection")
+        verbose_name = _("InfoScreen")
+        verbose_name_plural = _("InfoScreen")
