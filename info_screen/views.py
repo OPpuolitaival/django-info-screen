@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from .models import InfoScreen, Page
 from django.utils import timezone
+from django.db.models import Q
 
 
 class PageView(TemplateView):
@@ -13,21 +14,26 @@ class PageView(TemplateView):
         Excludes any polls that aren't published yet.
         """
         context = super(PageView, self).get_context_data(**kwargs)
-        collection = get_object_or_404(InfoScreen, pk=kwargs['collection'])
+        screen = get_object_or_404(InfoScreen, pk=kwargs['screen'])
         page = get_object_or_404(Page, pk=kwargs['page'])
-
-        queryset = Page.objects.filter(collection=collection).order_by('pk')
-        queryset = queryset.filter(start__lt=timezone.now()).filter(end__gt=timezone.now())
+        queryset = Page.objects.filter(infoscreen=screen).order_by('pk')
+        queryset = queryset.filter(
+            Q(start__lt=timezone.now(), end__gt=timezone.now()) |
+            Q(end=None)
+        )
         queryset_next = queryset.filter(pk__gt=page.pk)
+
         if queryset_next.count() > 0:
+            # If not latest one
             next_page = queryset_next[0]
         else:
+            # If the page is latest one
             next_page = queryset[0]
 
         context.update({
             'next_page': next_page,
             'page': page,
-            'collection': collection
+            'collection': screen
         })
 
         return context

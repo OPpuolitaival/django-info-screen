@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^collection/(?P<collection>\d+)/page/(?P<page>\d+)', views.PageView.as_view(), name='page'),
+    url(r'^(?P<screen>\d+)/page/(?P<page>\d+)', views.PageView.as_view(), name='page'),
 )

@@ -44,7 +44,7 @@ class InfoScreen(models.Model):
     delay_in_sec = models.IntegerField(_('Delay in seconds'), default=5)
 
     title = models.CharField(_('Title'), max_length=255, default='', null=True)
-    pages = models.ManyToManyField(Page, verbose_name=_('InfoScreen'))
+    pages = models.ManyToManyField(Page, verbose_name=_('InfoScreen'), blank=True)
 
     def __str__(self):
         return u"{}".format(self.title)
