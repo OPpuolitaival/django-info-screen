@@ -6,6 +6,23 @@ from django.utils import timezone
 from django.db.models import Q
 
 
+class MainView(TemplateView):
+    template_name = 'info_screen/main.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Excludes any polls that aren't published yet.
+        """
+        context = super(MainView, self).get_context_data(**kwargs)
+
+        context.update({
+            'screens': InfoScreen.objects.all(),
+        })
+
+        return context
+
+
+
 class PageView(TemplateView):
     template_name = 'info_screen/page.html'
 
