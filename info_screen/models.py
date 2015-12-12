@@ -1,5 +1,8 @@
 # coding: utf-8
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -39,6 +42,33 @@ class Page(models.Model):
         verbose_name = _("Page")
         verbose_name_plural = _("Page")
 
+    def next_page(self, screen):
+        queryset = screen.visible_pages()
+
+        # in case that there is no pages
+        if not queryset.exists():
+            return None
+
+        # Query if there are some left in this round
+        queryset_next = queryset.filter(pk__gt=self.pk)
+
+        if queryset_next.count() > 0:
+            # If not latest one
+            next_page = queryset_next[0]
+        else:
+            # If the page is latest one
+            next_page = queryset[0]
+        return next_page
+
+    def show_url(self):
+        if self.type == Page.IMAGE:
+            url = reverse('info_screen:image', kwargs={'page': self.pk})
+        elif self.type == Page.URL:
+            url = self.url
+        else:
+            url = None
+        return url
+
 
 class InfoScreen(models.Model):
     """
@@ -50,6 +80,18 @@ class InfoScreen(models.Model):
 
     title = models.CharField(_('Title'), max_length=255, default='', null=True)
     pages = models.ManyToManyField(Page, verbose_name=_('InfoScreen'), blank=True)
+
+    def visible_pages(self):
+        queryset = Page.objects.filter(infoscreen=self).order_by('pk')
+        queryset = queryset.filter(
+                # Search visible pages at the moment
+                Q(start__lt=timezone.now(), end__gt=timezone.now()) |
+                # If end time is missing, then the page is visible forever
+                Q(end=None) |
+                # Continuous pages are shown anyway
+                Q(continuous=True)
+        )
+        return queryset
 
     def __str__(self):
         return u"{}".format(self.title)

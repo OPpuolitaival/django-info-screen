@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.MainView.as_view(), name='main'),
-    url(r'^(?P<screen>\d+)/page/(?P<page>\d+)', views.PageView.as_view(), name='page'),
+    url(r'^api/', views.ScreenJsonView.as_view(), name='api'),
+    url(r'^(?P<screen>\d+)/', views.ScreenView.as_view(), name='screen'),
+    url(r'^image/(?P<page>\d+)', views.ImageView.as_view(), name='image'),
 )

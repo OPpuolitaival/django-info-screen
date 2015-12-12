@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <title>{{ title.title }}</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+<div class="content">Loading..</div>
+
+<script type="text/javascript" src="{{ STATIC_URL }}jquery-2.1.4.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+                pageid = {{ page.id|default:"undefined" }};
+                load_url = "{{ page.show_url|default:"" }}";
+                previous_url = ''
+                if (load_url != "") {
+                    $(".content").load(load_url);
+                }
+                var timeout = {{ screen.delay_in_sec }}000;
+
+                // Infinite loop with delay
+                var action = function () {
+
+                    // Load next page information from rest api
+                    $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_id={{ screen.id }}", function (data) {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        pageid = data.id;
+                        previous_url = load_url
+                        load_url = data.url;
+                        if (isNaN(data.delay_in_sec) == false) {
+                            timeouts = data.delay_in_sec * 1000;
+                            console.log(timeouts)
+                        }
+                    });
+
+                    // Load content if changed
+                    if (previous_url != load_url) {
+                        if (load_url != "") {
+                            $(".content").load(load_url);
+                        }
+                    }
+                    setTimeout(action, timeout);
+                };
+                action();
+            }
+    );
+</script>
+
+</body>
+</html>

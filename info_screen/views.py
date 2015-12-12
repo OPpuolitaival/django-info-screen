@@ -1,65 +1,72 @@
 # coding: utf-8
-from django.views.generic import TemplateView
+import json
+
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView, View
+
 from .models import InfoScreen, Page
-from django.utils import timezone
-from django.db.models import Q
 
 
-class MainView(TemplateView):
-    template_name = 'info_screen/main.html'
+class ScreenView(TemplateView):
+    template_name = 'info_screen/screen.html'
 
     def get_context_data(self, **kwargs):
         """
         Excludes any polls that aren't published yet.
         """
-        context = super(MainView, self).get_context_data(**kwargs)
-
-        context.update({
-            'screens': InfoScreen.objects.all(),
-        })
-
-        return context
-
-
-
-class PageView(TemplateView):
-    template_name = 'info_screen/page.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Excludes any polls that aren't published yet.
-        """
-        context = super(PageView, self).get_context_data(**kwargs)
+        context = super(ScreenView, self).get_context_data(**kwargs)
         screen = get_object_or_404(InfoScreen, pk=kwargs['screen'])
-        page = get_object_or_404(Page, pk=kwargs['page'])
-        queryset = Page.objects.filter(infoscreen=screen).order_by('pk')
-
-        if not queryset.exists():
-            context.update({'no_page': True, })
-            return context
-
-        queryset = queryset.filter(
-            # Search visible pages at the moment
-            Q(start__lt=timezone.now(), end__gt=timezone.now()) |
-            # If end time is missing, then the page is visible forever
-            Q(end=None)
-        )
-
-        # Query if there are some left in this round
-        queryset_next = queryset.filter(pk__gt=page.pk)
-
-        if queryset_next.count() > 0:
-            # If not latest one
-            next_page = queryset_next[0]
-        else:
-            # If the page is latest one
-            next_page = queryset[0]
 
         context.update({
-            'next_page': next_page,
-            'page': page,
-            'collection': screen,
+            'page': screen.visible_pages().first(),
+            'screen': screen,
         })
 
         return context
+
+
+class ImageView(TemplateView):
+    template_name = 'info_screen/image.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ImageView, self).get_context_data(**kwargs)
+        page = get_object_or_404(Page, pk=kwargs['page'])
+
+        context.update({
+            'image_url': page.image_file.url,
+        })
+
+        return context
+
+
+class ScreenJsonView(View):
+    def get(self, *args, **kwargs):
+        print self.request.GET
+        ret = dict()
+        keys = self.request.GET.keys()
+        current_page = None
+        np = None
+
+        if 'page_id' in keys:
+            page_id = self.request.GET['page_id']
+            if page_id.isdigit():
+                current_page = get_object_or_404(Page, pk=page_id)
+
+        if 'screen_id' in keys:
+            screen = get_object_or_404(InfoScreen, pk=self.request.GET['screen_id'])
+            if current_page is not None:
+                # Normal case
+                np = current_page.next_page(screen)
+            else:
+                # Case that no page, i.e. no visible pages
+                if screen.visible_pages().exists():
+                    np = screen.visible_pages().first()
+
+            if np:
+                ret = {
+                    'id': np.id,
+                    'url': np.show_url(),
+                    'delay_in_sec': screen.delay_in_sec}
+
+        return HttpResponse(json.dumps(ret))
