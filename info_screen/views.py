@@ -34,6 +34,11 @@ class PageView(TemplateView):
         screen = get_object_or_404(InfoScreen, pk=kwargs['screen'])
         page = get_object_or_404(Page, pk=kwargs['page'])
         queryset = Page.objects.filter(infoscreen=screen).order_by('pk')
+
+        if not queryset.exists():
+            context.update({'no_page': True, })
+            return context
+
         queryset = queryset.filter(
             # Search visible pages at the moment
             Q(start__lt=timezone.now(), end__gt=timezone.now()) |
@@ -54,7 +59,7 @@ class PageView(TemplateView):
         context.update({
             'next_page': next_page,
             'page': page,
-            'collection': screen
+            'collection': screen,
         })
 
         return context

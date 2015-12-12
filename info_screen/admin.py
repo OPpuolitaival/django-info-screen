@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 
-from .models import InfoScreen, Page, BackLink
+from .models import InfoScreen, Page
 
 admin.site.register(InfoScreen)
 admin.site.register(Page)
@@ -15,4 +15,3 @@ class MyAdminSite(AdminSite):
 admin_site = MyAdminSite(name='info screen admin')
 admin_site.register(InfoScreen)
 admin_site.register(Page)
-admin_site.register(BackLink)

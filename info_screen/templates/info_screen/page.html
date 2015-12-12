@@ -2,26 +2,35 @@
 {% load staticfiles %}
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="{{collection.delay_in_sec}}; url={% url 'info_screen:page' collection.pk next_page.pk %}" />
-	<title>{{page.title}}</title>
-    <meta charset="UTF-8">
-    <link href="{{ STATIC_URL }}base.css" rel="stylesheet">
+    {% if not no_page %}
+        <meta http-equiv="refresh"
+              content="{{ collection.delay_in_sec }}; url={% url 'info_screen:page' collection.pk next_page.pk %}"/>
+        <title>{{ page.title }}</title>
+        <meta charset="UTF-8">
+        <link href="{{ STATIC_URL }}base.css" rel="stylesheet">
+    {% endif %}
 </head>
+
 <body bgcolor="#000000;">
+
+{% if no_page %}
+    <div style="color:white">No page</div>
+{% else %}
     {% if page.type == 0 %}
         {% if page.url %}
-            <iframe src="{{page.url}}" style="border: 0; width: 100%; height: 4000px;"></iframe>
+            <iframe src="{{ page.url }}" style="border: 0; width: 100%; height: 4000px;"></iframe>
         {% else %}
             no url
         {% endif %}
-    {% elif page.type == 1%}
+    {% elif page.type == 1 %}
         {% if page.image_file %}
-            <img src="{{page.image_file.url}}" alt="">
+            <img src="{{ page.image_file.url }}" alt="">
         {% else %}
             no image
         {% endif %}
     {% else %}
-        ERROR: page type {{page.type}}} is not supported
+        ERROR: page type {{ page.type }}} is not supported
     {% endif %}
+{% endif %}
 </body>
 </html>
