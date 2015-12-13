@@ -16,8 +16,7 @@ class ScreenView(TemplateView):
         Excludes any polls that aren't published yet.
         """
         context = super(ScreenView, self).get_context_data(**kwargs)
-        screen = get_object_or_404(InfoScreen, pk=kwargs['screen'])
-
+        screen = get_object_or_404(InfoScreen, uuid=kwargs['screen_uuid'])
         context.update({
             'page': screen.visible_pages().first(),
             'screen': screen,
@@ -31,7 +30,7 @@ class ImageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ImageView, self).get_context_data(**kwargs)
-        page = get_object_or_404(Page, pk=kwargs['page'])
+        page = get_object_or_404(Page, uuid=kwargs['page_uuid'])
 
         context.update({
             'image_url': page.image_file.url,
@@ -42,7 +41,6 @@ class ImageView(TemplateView):
 
 class ScreenJsonView(View):
     def get(self, *args, **kwargs):
-        print self.request.GET
         ret = dict()
         keys = self.request.GET.keys()
         current_page = None
@@ -53,8 +51,8 @@ class ScreenJsonView(View):
             if page_id.isdigit():
                 current_page = get_object_or_404(Page, pk=page_id)
 
-        if 'screen_id' in keys:
-            screen = get_object_or_404(InfoScreen, pk=self.request.GET['screen_id'])
+        if 'screen_uuid' in keys:
+            screen = get_object_or_404(InfoScreen, uuid=self.request.GET['screen_uuid'])
             if current_page is not None:
                 # Normal case
                 np = current_page.next_page(screen)

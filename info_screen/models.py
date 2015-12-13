@@ -1,4 +1,6 @@
 # coding: utf-8
+import uuid
+
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -10,6 +12,7 @@ class Page(models.Model):
     """
     One view
     """
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
     timestamp = models.DateTimeField(_('Added'), auto_now_add=True, db_index=True)
     last_edit = models.DateTimeField(_('Last time edited'), auto_now=True, null=True)
     # Readonly if integrated system make some default views
@@ -62,7 +65,7 @@ class Page(models.Model):
 
     def show_url(self):
         if self.type == Page.IMAGE:
-            url = reverse('info_screen:image', kwargs={'page': self.pk})
+            url = reverse('info_screen:image', kwargs={'page_uuid': self.uuid})
         elif self.type == Page.URL:
             url = self.url
         else:
@@ -74,6 +77,7 @@ class InfoScreen(models.Model):
     """
     InfoScreen which collects a set of views to show in loop
     """
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
     timestamp = models.DateTimeField(_('Added'), auto_now_add=True, db_index=True)
     last_edit = models.DateTimeField(_('Last time edited'), auto_now=True, null=True)
     delay_in_sec = models.IntegerField(_('Delay in seconds'), default=5)

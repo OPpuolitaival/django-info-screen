@@ -14,7 +14,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-                pageid = {{ page.id|default:"undefined" }};
+                pageid = "{{ page.pk|default:"undefined" }}";
                 load_url = "{{ page.show_url|default:"" }}";
                 previous_url = ''
                 if (load_url != "") {
@@ -26,15 +26,19 @@
                 var action = function () {
 
                     // Load next page information from rest api
-                    $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_id={{ screen.id }}", function (data) {
-                        console.log(data);
-                        data = JSON.parse(data);
-                        pageid = data.id;
-                        previous_url = load_url
-                        load_url = data.url;
-                        if (isNaN(data.delay_in_sec) == false) {
-                            timeouts = data.delay_in_sec * 1000;
-                            console.log(timeouts)
+                    rest_url = "{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}"
+                    $.get(rest_url, function (data) {
+                        if (data == '{}') {
+                            load_url = "";
+                            $(".content").html("No visible page")
+                        }else{
+                            data = JSON.parse(data);
+                            pageid = data.id;
+                            previous_url = load_url
+                            load_url = data.url;
+                            if (isNaN(data.delay_in_sec) == false) {
+                                timeouts = data.delay_in_sec * 1000;
+                            }
                         }
                     });
 

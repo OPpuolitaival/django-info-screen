@@ -5,6 +5,6 @@ from . import views
 urlpatterns = patterns(
     '',
     url(r'^api/', views.ScreenJsonView.as_view(), name='api'),
-    url(r'^(?P<screen>\d+)/', views.ScreenView.as_view(), name='screen'),
-    url(r'^image/(?P<page>\d+)', views.ImageView.as_view(), name='image'),
+    url(r'^image/(?P<page_uuid>.*)', views.ImageView.as_view(), name='image'),
+    url(r'^(?P<screen_uuid>.*)/', views.ScreenView.as_view(), name='screen'),
 )

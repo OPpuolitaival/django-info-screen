@@ -1,17 +1,30 @@
 # coding: utf-8
 from django.contrib import admin
-from django.contrib.admin import AdminSite
 
 from .models import InfoScreen, Page
 
-admin.site.register(InfoScreen)
-admin.site.register(Page)
+
+class PageAdmin(admin.ModelAdmin):
+    """
+    MyWorkTurnAdmin
+    """
+    fields = ('timestamp', 'last_edit', 'title', 'continuous', 'start', 'end', 'order',
+              'type', 'url', 'image_file', 'uuid')
+    readonly_fields = ('timestamp', 'last_edit', 'uuid')
+    list_display = ('title', 'continuous', 'start', 'end', 'type', 'uuid')
+    list_filter = ('continuous', 'type')  # Right side filter
+    ordering = ('timestamp',)
 
 
-class MyAdminSite(AdminSite):
-    site_header = 'Info screen admin site'
+class InfoScreenAdmin(admin.ModelAdmin):
+    """
+    MyWorkTurnAdmin
+    """
+    fields = ('uuid', 'timestamp', 'last_edit', 'title', 'delay_in_sec', 'pages')
+    readonly_fields = ('uuid', 'timestamp', 'last_edit')
+    list_display = ('title', 'delay_in_sec', 'timestamp', 'uuid')
+    ordering = ('title',)
+    filter_horizontal = ('pages',)  # Better view for M2M fields
 
-
-admin_site = MyAdminSite(name='info screen admin')
-admin_site.register(InfoScreen)
-admin_site.register(Page)
+admin.site.register(InfoScreen, InfoScreenAdmin)
+admin.site.register(Page, PageAdmin)
