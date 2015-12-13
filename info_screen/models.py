@@ -73,8 +73,9 @@ class Page(models.Model):
         return url
 
     def is_visible(self):
-        if self.start < timezone.now() < self.end:
-            return True
+        if self.start is not None and self.end is not None:
+            if self.start < timezone.now() < self.end:
+                return True
         return self.continuous
 
 
