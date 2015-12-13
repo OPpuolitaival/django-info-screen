@@ -72,6 +72,11 @@ class Page(models.Model):
             url = None
         return url
 
+    def is_visible(self):
+        if self.start < timezone.now() < self.end:
+            return True
+        return self.continuous
+
 
 class InfoScreen(models.Model):
     """
@@ -90,8 +95,6 @@ class InfoScreen(models.Model):
         queryset = queryset.filter(
                 # Search visible pages at the moment
                 Q(start__lt=timezone.now(), end__gt=timezone.now()) |
-                # If end time is missing, then the page is visible forever
-                Q(end=None) |
                 # Continuous pages are shown anyway
                 Q(continuous=True)
         )
