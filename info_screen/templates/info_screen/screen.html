@@ -1,6 +1,8 @@
+{% load i18n %}
+
 <!DOCTYPE html>
 {% load staticfiles %}
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:"en" }}">
 <head>
     <title>{{ title.title }}</title>
     <meta charset="UTF-8">
@@ -8,7 +10,7 @@
 
 <body>
 
-<div class="content">Loading..</div>
+<div class="content">{% trans "Loading.." %}</div>
 
 <script type="text/javascript" src="{{ STATIC_URL }}jquery-2.1.4.min.js"></script>
 
@@ -30,7 +32,7 @@
                     $.get(rest_url, function (data) {
                         if (data == '{}') {
                             load_url = "";
-                            $(".content").html("No visible page")
+                            $(".content").html({% trans "No visible page" %})
                         }else{
                             data = JSON.parse(data);
                             pageid = data.id;
