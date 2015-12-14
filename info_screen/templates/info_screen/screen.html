@@ -42,11 +42,8 @@
                         }
                     });
 
-                    // Load content if changed
-                    if (previous_url != load_url) {
-                        if (load_url != "") {
-                            $(".content").load(load_url);
-                        }
+                    if (load_url != "") {
+                        $(".content").load(load_url);
                     }
                     setTimeout(action, timeout);
                 };
