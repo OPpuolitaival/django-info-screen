@@ -16,42 +16,41 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-                pageid = "{{ page.pk|default:"undefined" }}";
-                load_url = "{{ page.show_url|default:"" }}";
-                previous_url = ''
-                if (load_url != "") {
-                    $(".content").load(load_url);
-                }
-                var timeout = {{ screen.delay_in_sec }}000;
+        var pageid = "{{ page.pk|default:"undefined" }}";
+        var load_url = "{{ page.show_url|default:"" }}";
+        var previous_url = '';
+        if (load_url != "") {
+            $(".content").load(load_url);
+        }
+        var timeout = {{ screen.delay_in_sec }}000;
 
-                // Infinite loop with delay
-                var action = function () {
+        // Infinite loop with delay
+        var action = function () {
 
-                    // Load next page information from rest api
-                    rest_url = "{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}"
-                    $.get(rest_url, function (data) {
-                        if (data == '{}') {
-                            load_url = "";
-                            $(".content").html({% trans "No visible page" %})
-                        }else{
-                            data = JSON.parse(data);
-                            pageid = data.id;
-                            previous_url = load_url
-                            load_url = data.url;
-                            if (isNaN(data.delay_in_sec) == false) {
-                                timeouts = data.delay_in_sec * 1000;
-                            }
-                        }
-                    });
-
-                    if (load_url != "") {
-                        $(".content").load(load_url);
+            // Load next page information from rest api
+            rest_url = "{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}";
+            $.get(rest_url, function (data) {
+                if (data == '{}') {
+                    load_url = "";
+                    $(".content").html("{% trans "No visible page" %}");
+                } else {
+                    data = JSON.parse(data);
+                    pageid = data.id;
+                    previous_url = load_url;
+                    load_url = data.url;
+                    if (isNaN(data.delay_in_sec) == false) {
+                        timeout = data.delay_in_sec * 1000;
                     }
-                    setTimeout(action, timeout);
-                };
-                action();
+                }
+            });
+
+            if (load_url != "") {
+                $(".content").load(load_url);
             }
-    );
+            setTimeout(action, timeout);
+        };
+        action();
+    });
 </script>
 
 </body>

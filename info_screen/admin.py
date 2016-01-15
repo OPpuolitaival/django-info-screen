@@ -9,7 +9,7 @@ class PageAdmin(admin.ModelAdmin):
     MyWorkTurnAdmin
     """
     fields = ('timestamp', 'last_edit', 'title', 'continuous', 'start', 'end', 'order',
-              'type', 'url', 'image_file', 'uuid')
+              'type', 'url', 'image_file', 'uuid', 'delay_in_sec')
     readonly_fields = ('timestamp', 'last_edit', 'uuid')
     list_display = ('title', 'continuous', 'start', 'end', 'type', 'uuid')
     list_filter = ('continuous', 'type')  # Right side filter

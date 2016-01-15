@@ -65,6 +65,6 @@ class ScreenJsonView(View):
                 ret = {
                     'id': np.id,
                     'url': np.show_url(),
-                    'delay_in_sec': screen.delay_in_sec}
+                    'delay_in_sec': np.delay_in_sec}
 
         return HttpResponse(json.dumps(ret))

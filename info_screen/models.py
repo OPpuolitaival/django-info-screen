@@ -26,6 +26,7 @@ class Page(models.Model):
     end = models.DateTimeField(_('view ending time'), db_index=True, null=True, blank=True)
     # Order integer, smallest numbers shown first
     order = models.IntegerField(_('order'), db_index=True, default=0)
+    delay_in_sec = models.IntegerField(_('Default delay in seconds'), default=5)
     URL = 0
     IMAGE = 1
     VIEW_TYPE = (
@@ -90,8 +91,6 @@ class InfoScreen(models.Model):
         queryset = queryset.filter(
                 # Search visible pages at the moment
                 Q(start__lt=timezone.now(), end__gt=timezone.now()) |
-                # If end time is missing, then the page is visible forever
-                Q(end=None) |
                 # Continuous pages are shown anyway
                 Q(continuous=True)
         )
