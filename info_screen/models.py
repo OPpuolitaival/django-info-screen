@@ -73,6 +73,12 @@ class Page(models.Model):
             url = None
         return url
 
+    def is_visible(self):
+        if self.start and self.end:
+            if self.start < timezone.now() < self.end:
+                return True
+        return self.continuous
+
 
 class InfoScreen(models.Model):
     """

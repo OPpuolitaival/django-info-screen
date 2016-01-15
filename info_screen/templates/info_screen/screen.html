@@ -38,9 +38,7 @@
                     pageid = data.id;
                     previous_url = load_url;
                     load_url = data.url;
-                    if (isNaN(data.delay_in_sec) == false) {
-                        timeout = data.delay_in_sec * 1000;
-                    }
+                    timeout = data.delay_in_sec * 1000;
                 }
             });
 
