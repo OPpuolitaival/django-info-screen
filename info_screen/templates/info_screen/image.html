@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> </title>
+    <title></title>
     <link href="{{ STATIC_URL }}image.css" rel="stylesheet">
 </head>
 <body>
-<img src="{{ image_url }}" alt="">
+{% if image_url %}
+    <img src="{{ image_url }}" alt="">
+{% endif %}
 </body>
 </html>

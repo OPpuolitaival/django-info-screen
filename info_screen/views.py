@@ -32,9 +32,10 @@ class ImageView(TemplateView):
         context = super(ImageView, self).get_context_data(**kwargs)
         page = get_object_or_404(Page, uuid=kwargs['page_uuid'])
 
-        context.update({
-            'image_url': page.image_file.url,
-        })
+        if page.image_file:
+            context.update({
+                'image_url': page.image_file.url,
+            })
 
         return context
 
