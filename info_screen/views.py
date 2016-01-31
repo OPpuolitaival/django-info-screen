@@ -66,6 +66,7 @@ class ScreenJsonView(View):
                 ret = {
                     'id': np.id,
                     'url': np.show_url(),
-                    'delay_in_sec': np.delay_in_sec}
+                    # Do not accept faster than 5 sec delay to protect server load
+                    'delay_in_sec': max([5, np.delay_in_sec])}
 
         return HttpResponse(json.dumps(ret))
