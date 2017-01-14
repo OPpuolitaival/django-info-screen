@@ -16,13 +16,14 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        var is_slideshow_page = {% if page.is_slideshow_page %}true{% else %}false{%endif%}
         var pageid = "{{ page.pk|default:"undefined" }}";
         var load_url = "{{ page.show_url|default:"" }}";
-        var previous_url = '';
         if (load_url != "") {
             $(".content").load(load_url);
         }
         var timeout = {{ screen.delay_in_sec }}000;
+        var same_page_loop_index = 0;
 
         // Infinite loop with delay
         var action = function () {
@@ -36,14 +37,24 @@
                 } else {
                     data = JSON.parse(data);
                     pageid = data.id;
-                    previous_url = load_url;
                     load_url = data.url;
                     timeout = data.delay_in_sec * 1000;
                 }
             });
 
             if (load_url != "") {
+              if (is_slideshow_page == false){
                 $(".content").load(load_url);
+              }else{
+                // Loop site so many times that error return code received
+                $.get( load_url + '?page=' + (same_page_loop_index +1), function( data ) {
+                    $( ".content" ).html( data );
+                    same_page_loop_index++;
+                }).fail(function() {
+                    //Error during site loading
+                    same_page_loop_index = 0;  // Reset loop index
+                });
+              }
             }
             setTimeout(action, timeout);
         };
