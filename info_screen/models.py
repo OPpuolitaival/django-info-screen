@@ -27,6 +27,9 @@ class Page(models.Model):
     # Order integer, smallest numbers shown first
     order = models.IntegerField(_('order'), db_index=True, default=0)
     delay_in_sec = models.IntegerField(_('Default delay in seconds'), default=5)
+    # In this case slideshow will loop same site with get parameter ?page=n, where n is increased one by one
+    # When site returns error code slideshow will continue next site
+    is_slideshow_page = models.BooleanField(_('Slideshow page'), default=False)
     URL = 0
     IMAGE = 1
     VIEW_TYPE = (
