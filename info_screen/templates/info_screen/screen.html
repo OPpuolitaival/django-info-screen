@@ -22,60 +22,43 @@
         var timeout = {{ screen.delay_in_sec }}000;
 
         // Page loop indexing
-        var page_loop_index = 0;
-        var next_page = -1;
-
-        var waiting_rest_timeout = 1000;
-        // In case that slideshow page last page need to go next faster
-        var skip_waiting = false;
-
-        // This is needed to wait for rest apis before is known where to go next
-        var middleStep = function () {
-          if (skip_waiting){
-            setTimeout(action, 0);
-          }else{
-            setTimeout(action, timeout-waiting_rest_timeout);
-          }
-        }
+        var page_loop_index = 1;
 
         // Infinite loop with delay
         var action = function () {
-          skip_waiting = false;
-          if (page_loop_index == next_page){
-              page_loop_index = 0;
-              // Load next page information from rest api
-              rest_url = "{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}";
-              $.get(rest_url, function (data) {
-                  if (data == '{}') {
-                      load_url = "";
-                      $(".content").html("{% trans "No visible page" %}");
-                  } else {
-                      data = JSON.parse(data);
-                      pageid = data.id;
-                      load_url = data.url;
-                      timeout = data.delay_in_sec * 1000;
-                      is_slideshow_page = data.is_slideshow_page;
-                  }
-              });
-            }else{
-              if (is_slideshow_page == false){
-                $(".content").load(load_url);
-                page_loop_index = next_page;
+          if (!is_slideshow_page){
+            $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}", function (data) {
+                if (data == '{}') {
+                    $(".content").html("{% trans "No visible page" %}");
+                } else {
+                    data = JSON.parse(data);
+                    pageid = data.id;
+                    load_url = data.url;
+                    timeout = data.delay_in_sec * 1000;
+                    is_slideshow_page = data.is_slideshow_page;
+                }
+                if(is_slideshow_page){
+                  page_loop_index = 1;
+                  setTimeout(action, 0);
+                }else{
+                  $(".content").load(load_url);
+                  setTimeout(action, timeout);
+                }
+            });
+          }else{
+            $.get( load_url + '?page=' + (page_loop_index), function( data ) {
+              if(data){
+                $( ".content" ).html( data ); // Load data in element
+                page_loop_index++;
+                setTimeout(action, timeout);
               }else{
-                // Loop site so many times that error return code received
-                $.get( load_url + '?page=' + (page_loop_index +1), function( data ) {
-                  if(data){
-                    $( ".content" ).html( data );
-                    page_loop_index++;
-                  }else{
-                    // Empty data means that no more pages
-                    page_loop_index = next_page;  // Reset loop index
-                    skip_waiting = true;
-                  }
-                });
+                // Empty data means that no more pages
+                is_slideshow_page = false;  // No more slideshow
+                page_loop_index = 1;  // Reset loop index
+                setTimeout(action, 0);
               }
-            }
-            setTimeout(middleStep, waiting_rest_timeout);
+            });
+          }
         };
         action();
     });
