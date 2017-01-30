@@ -19,7 +19,8 @@
         var is_slideshow_page = {% if page.is_slideshow_page %}true{% else %}false{%endif%}
         var pageid = "{{ page.pk|default:"undefined" }}";
         var load_url = "{{ page.show_url|default:"" }}";
-        var timeout = {{ screen.delay_in_sec }}000;
+        // First page timeout
+        var timeout = {{ page.delay_in_sec }}000;
 
         // Page loop indexing
         var page_loop_index = 1;
@@ -27,6 +28,7 @@
         // Infinite loop with delay
         var action = function () {
           if (!is_slideshow_page){
+            // Normal page
             $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}", function (data) {
                 if (data == '{}') {
                     $(".content").html("{% trans "No visible page" %}");
@@ -46,6 +48,7 @@
                 }
             });
           }else{
+            // Slideshow page
             $.get( load_url + '?page=' + (page_loop_index), function( data ) {
               if(data){
                 $( ".content" ).html( data ); // Load data in element
