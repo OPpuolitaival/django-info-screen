@@ -1,4 +1,7 @@
 # coding: utf-8
+
+from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 import uuid
 
 from django.core.urlresolvers import reverse
@@ -8,6 +11,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 
+@python_2_unicode_compatible
 class Page(models.Model):
     """
     One view
@@ -40,7 +44,7 @@ class Page(models.Model):
     url = models.URLField(_('url'), blank=True, null=True)
     image_file = models.FileField(_('image file'), upload_to='info_view/%Y/%m/%d', null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -83,6 +87,7 @@ class Page(models.Model):
         return self.continuous
 
 
+@python_2_unicode_compatible
 class InfoScreen(models.Model):
     """
     InfoScreen which collects a set of views to show in loop
@@ -98,10 +103,10 @@ class InfoScreen(models.Model):
     def visible_pages(self):
         queryset = Page.objects.filter(infoscreen=self).order_by('pk')
         queryset = queryset.filter(
-                # Search visible pages at the moment
-                Q(start__lt=timezone.now(), end__gt=timezone.now()) |
-                # Continuous pages are shown anyway
-                Q(continuous=True)
+            # Search visible pages at the moment
+            Q(start__lt=timezone.now(), end__gt=timezone.now()) |
+            # Continuous pages are shown anyway
+            Q(continuous=True)
         )
         return queryset
 
