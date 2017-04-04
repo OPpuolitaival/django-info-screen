@@ -1,6 +1,4 @@
-===============================
-Running the example application
-===============================
+# Running the example application
 
 Clone django-info-screen:
 
