@@ -29,9 +29,10 @@
         var action = function () {
           if (!is_slideshow_page){
             // Normal page
-            $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}", function (data) {
+            $.get("{% url 'info_screen:api' %}?page_id=" + pageid + "&screen_uuid={{ screen.uuid }}")
+                .success(function (data) {
                 if (data == '{}') {
-                    $(".content").html("{% trans "No visible page" %}");
+                    $(".content").html("{% trans 'No visible page' %}");
                 } else {
                     data = JSON.parse(data);
                     pageid = data.id;
@@ -46,20 +47,35 @@
                   $(".content").load(load_url);
                   setTimeout(action, timeout);
                 }
+            }).error(function(jqXHR, textStatus, errorThrown) {
+                // Just try to recover
+                if(is_slideshow_page){
+                  page_loop_index = 1;
+                  setTimeout(action, 0);
+                }else{
+                  $(".content").load(load_url);
+                  setTimeout(action, timeout);
+                }
             });
           }else{
             // Slideshow page
-            $.get( load_url + '?page=' + (page_loop_index), function( data ) {
-              if(data){
-                $( ".content" ).html( data ); // Load data in element
-                page_loop_index++;
-                setTimeout(action, timeout);
-              }else{
-                // Empty data means that no more pages
-                is_slideshow_page = false;  // No more slideshow
-                page_loop_index = 1;  // Reset loop index
+            $.get( load_url + '?page=' + (page_loop_index))
+                .success(function( data ) {
+                  if(data){
+                    $( ".content" ).html( data ); // Load data in element
+                    page_loop_index++;
+                    setTimeout(action, timeout);
+                  }else{
+                    // Empty data means that no more pages
+                    is_slideshow_page = false;  // No more slideshow
+                    page_loop_index = 1;  // Reset loop index
+                    setTimeout(action, 0);
+                  }
+            }).error(function(jqXHR, textStatus, errorThrown) {
+                // Just try to recover
+                is_slideshow_page = false;
+                page_loop_index = 1;
                 setTimeout(action, 0);
-              }
             });
           }
         };
